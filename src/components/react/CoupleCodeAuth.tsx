@@ -11,6 +11,7 @@ export default function CoupleCodeAuth() {
     coupleCode: '',
   });
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+  const [joinSuccess, setJoinSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCreate = async () => {
@@ -19,6 +20,7 @@ export default function CoupleCodeAuth() {
       return;
     }
 
+    setError(null);
     const result = await createCouple(formData.partnerName, formData.anniversaryDate);
     
     if (result.success && result.coupleCode) {
@@ -38,9 +40,13 @@ export default function CoupleCodeAuth() {
       return;
     }
 
+    setError(null);
     const result = await joinCouple(formData.coupleCode, formData.partnerName);
     
-    if (!result.success) {
+    if (result.success) {
+      setJoinSuccess(true);
+      // The auth state will update and AppContainer will re-render
+    } else {
       setError(result.error || 'Error al unirse a la pareja');
     }
   };
@@ -70,7 +76,7 @@ export default function CoupleCodeAuth() {
 
         {mode === 'create' && !generatedCode && (
           <div className="auth-form">
-            <button className="back-btn" onClick={() => setMode('choice')}>← Volver</button>
+            <button className="back-btn" onClick={() => { setMode('choice'); setError(null); }}>← Volver</button>
             <h2>Crear Nueva Pareja</h2>
             <input type="text" placeholder="Tu nombre" value={formData.partnerName} onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })} maxLength={30} />
             <label>Fecha de aniversario:</label>
@@ -97,9 +103,9 @@ export default function CoupleCodeAuth() {
           </div>
         )}
 
-        {mode === 'join' && (
+        {mode === 'join' && !joinSuccess && (
           <div className="auth-form">
-            <button className="back-btn" onClick={() => setMode('choice')}>← Volver</button>
+            <button className="back-btn" onClick={() => { setMode('choice'); setError(null); }}>← Volver</button>
             <h2>Unirse a Pareja</h2>
             <input type="text" placeholder="Tu nombre" value={formData.partnerName} onChange={(e) => setFormData({ ...formData, partnerName: e.target.value })} maxLength={30} />
             <input type="text" placeholder="Código de pareja (6 caracteres)" value={formData.coupleCode} onChange={(e) => setFormData({ ...formData, coupleCode: e.target.value.toUpperCase() })} maxLength={6} style={{ textTransform: 'uppercase', letterSpacing: '0.2em', textAlign: 'center' }} />
@@ -107,6 +113,15 @@ export default function CoupleCodeAuth() {
             <button className="auth-btn primary" onClick={handleJoin} disabled={loading}>
               {loading ? 'Conectando...' : 'Unirse'}
             </button>
+          </div>
+        )}
+
+        {joinSuccess && (
+          <div className="success-screen">
+            <div className="success-icon">✅</div>
+            <h2>¡Conectado Exitosamente!</h2>
+            <p>Cargando tu espacio de pareja...</p>
+            <div className="loading-spinner"></div>
           </div>
         )}
       </div>
@@ -334,6 +349,21 @@ export default function CoupleCodeAuth() {
         .code-info {
           font-size: 0.9rem;
           color: var(--text-tertiary);
+        }
+
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid var(--border-secondary);
+          border-top: 5px solid var(--accent-pink);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 1rem auto;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 640px) {
