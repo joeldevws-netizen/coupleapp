@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCoupleAuth } from '../../lib/hooks/useCoupleAuth';
+import { supabase } from '../../lib/supabase';
 import ThemeToggle from './ThemeToggle';
 
 export default function CoupleCodeAuth() {
@@ -49,11 +50,46 @@ export default function CoupleCodeAuth() {
     // y AppContainer manejará el cambio automáticamente
   };
 
+  const runDiagnostics = async () => {
+    const logs: string[] = [];
+    const log = (msg: string) => logs.push(msg);
+
+    try {
+      log('Iniciando diagnóstico...');
+      log(`URL configurada: ${!!import.meta.env.PUBLIC_SUPABASE_URL ? 'SÍ' : 'NO'}`);
+      log(`Key configurada: ${!!import.meta.env.PUBLIC_SUPABASE_KEY || !!import.meta.env.PUBLIC_SUPABASE_ANON_KEY ? 'SÍ' : 'NO'}`);
+
+      log('Probando conexión a Supabase...');
+      // @ts-ignore
+      const { data, error } = await (supabase as any).from('couples').select('count').limit(1).single();
+      
+      if (error) {
+        log(`❌ Error de conexión: ${error.message}`);
+        log(`Detalles: ${JSON.stringify(error)}`);
+      } else {
+        log('✅ Conexión exitosa a tabla couples');
+        log(`Datos recibidos: ${JSON.stringify(data)}`);
+      }
+
+    } catch (e: any) {
+      log(`❌ Error inesperado: ${e.message}`);
+    }
+
+    alert(logs.join('\n'));
+  };
+
   return (
     <div className="auth-container">
       <div className="theme-toggle-wrapper">
         <ThemeToggle />
       </div>
+      
+      <button 
+        onClick={runDiagnostics} 
+        style={{ position: 'absolute', top: '1rem', left: '1rem', opacity: 0.5, fontSize: '0.8rem' }}
+      >
+        🛠️ Diagnóstico
+      </button>
 
       <div className="auth-card">
         <div className="auth-header">
