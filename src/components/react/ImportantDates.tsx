@@ -43,6 +43,8 @@ export default function ImportantDates() {
     if (result.success) {
       setFormData({ title: '', date: '', icon: '🎉', description: '' });
       setShowAddForm(false);
+    } else {
+      alert('Error al guardar: ' + (result.error || 'Verifica tu conexión o que las tablas de base de datos existan'));
     }
   };
 

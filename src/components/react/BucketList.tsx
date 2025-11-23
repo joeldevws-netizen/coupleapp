@@ -16,10 +16,19 @@ export default function BucketList() {
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
-    const result = await addItem({ title: formData.title.trim(), category: formData.category, priority: formData.priority, notes: formData.notes.trim() });
+    
+    const result = await addItem({ 
+      title: formData.title.trim(), 
+      category: formData.category, 
+      priority: formData.priority, 
+      notes: formData.notes.trim() 
+    });
+
     if (result.success) {
       setFormData({ title: '', category: 'travel', priority: 'medium', notes: '' });
       setShowAddForm(false);
+    } else {
+      alert('Error al guardar: ' + (result.error || 'Verifica tu conexión o que las tablas de base de datos existan'));
     }
   };
 
