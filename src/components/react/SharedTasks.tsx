@@ -13,6 +13,8 @@ export default function SharedTasks() {
     if (result.success) {
       setNewTask('');
       inputRef.current?.focus();
+    } else {
+      alert('Error al añadir tarea: ' + (result.error || 'Verifica tu conexión'));
     }
   };
 

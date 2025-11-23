@@ -20,6 +20,8 @@ export default function MessageWall() {
     if (result.success) {
       setNewMessage('');
       textareaRef.current?.focus();
+    } else {
+      alert('Error al enviar mensaje: ' + (result.error || 'Verifica tu conexión'));
     }
   };
 

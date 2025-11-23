@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { useCoupleAuth } from './useCoupleAuth';
+import type { Database } from '../types/database.types';
+
+type BucketItemRow = Database['public']['Tables']['bucket_list']['Row'];
+type BucketItemInsert = Database['public']['Tables']['bucket_list']['Insert'];
 
 interface BucketItem {
   id: string;
@@ -41,10 +45,10 @@ export function useBucketList() {
       const formattedItems = (data || []).map((d: any) => ({
         id: d.id,
         title: d.title,
-        category: d.category,
-        completed: d.completed,
-        priority: d.priority,
-        notes: d.notes,
+        category: d.category as BucketItem['category'],
+        completed: d.completed || false,
+        priority: d.priority as BucketItem['priority'],
+        notes: d.notes || undefined,
       }));
 
       setItems(formattedItems);
@@ -82,9 +86,18 @@ export function useBucketList() {
 
   const addItem = async (item: Omit<BucketItem, 'id' | 'completed'>) => {
     try {
+      const newItem: BucketItemInsert = {
+        couple_id: coupleId!,
+        title: item.title,
+        category: item.category,
+        priority: item.priority,
+        notes: item.notes,
+        completed: false
+      };
+
       const { data, error } = await (supabase as any)
         .from('bucket_list')
-        .insert([{ ...item, couple_id: coupleId, completed: false }])
+        .insert([newItem])
         .select()
         .single();
 

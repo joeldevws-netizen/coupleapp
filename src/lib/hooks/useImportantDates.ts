@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { useCoupleAuth } from './useCoupleAuth';
+import type { Database } from '../types/database.types';
+
+type ImportantDateRow = Database['public']['Tables']['important_dates']['Row'];
+type ImportantDateInsert = Database['public']['Tables']['important_dates']['Insert'];
 
 interface ImportantDate {
   id: string;
@@ -43,9 +47,9 @@ export function useImportantDates() {
         id: d.id,
         title: d.title,
         date: d.date,
-        type: d.type,
+        type: d.type as ImportantDate['type'],
         icon: d.icon,
-        description: d.description,
+        description: d.description || undefined,
       }));
 
       setDates(formattedDates);
@@ -84,9 +88,18 @@ export function useImportantDates() {
 
   const addDate = async (date: Omit<ImportantDate, 'id'>) => {
     try {
+      const newDate: ImportantDateInsert = {
+        couple_id: coupleId!,
+        title: date.title,
+        date: date.date,
+        type: date.type,
+        icon: date.icon,
+        description: date.description
+      };
+
       const { data, error } = await (supabase as any)
         .from('important_dates')
-        .insert([{ ...date, couple_id: coupleId }])
+        .insert([newDate])
         .select()
         .single();
 

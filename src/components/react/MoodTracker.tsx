@@ -24,7 +24,10 @@ export default function MoodTracker() {
   const { myMood, partnerMood, loading, setMood } = useMoodTracker();
 
   const handleMoodSelect = async (mood: Mood) => {
-    await setMood(mood);
+    const result = await setMood(mood);
+    if (!result.success) {
+      alert('Error al actualizar mood: ' + (result.error || 'Verifica tu conexión'));
+    }
   };
 
   const getMoodData = (mood: Mood | null) => {

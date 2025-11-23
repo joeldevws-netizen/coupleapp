@@ -113,18 +113,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Aplicar trigger a todas las tablas con updated_at
+DROP TRIGGER IF EXISTS update_couples_updated_at ON couples;
 CREATE TRIGGER update_couples_updated_at BEFORE UPDATE ON couples
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_dates_updated_at ON important_dates;
 CREATE TRIGGER update_dates_updated_at BEFORE UPDATE ON important_dates
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_bucket_updated_at ON bucket_list;
 CREATE TRIGGER update_bucket_updated_at BEFORE UPDATE ON bucket_list
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_tasks_updated_at ON tasks;
 CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_photos_updated_at ON photos;
 CREATE TRIGGER update_photos_updated_at BEFORE UPDATE ON photos
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -147,30 +152,37 @@ ALTER TABLE mood_entries ENABLE ROW LEVEL SECURITY;
 -- ============================================
 
 -- Couples: Permitir todo
+DROP POLICY IF EXISTS "Enable all for couples" ON couples;
 CREATE POLICY "Enable all for couples" ON couples
     FOR ALL USING (true) WITH CHECK (true);
 
 -- Important Dates: Permitir todo
+DROP POLICY IF EXISTS "Enable all for important_dates" ON important_dates;
 CREATE POLICY "Enable all for important_dates" ON important_dates
     FOR ALL USING (true) WITH CHECK (true);
 
 -- Bucket List: Permitir todo
+DROP POLICY IF EXISTS "Enable all for bucket_list" ON bucket_list;
 CREATE POLICY "Enable all for bucket_list" ON bucket_list
     FOR ALL USING (true) WITH CHECK (true);
 
 -- Tasks: Permitir todo
+DROP POLICY IF EXISTS "Enable all for tasks" ON tasks;
 CREATE POLICY "Enable all for tasks" ON tasks
     FOR ALL USING (true) WITH CHECK (true);
 
 -- Messages: Permitir todo
+DROP POLICY IF EXISTS "Enable all for messages" ON messages;
 CREATE POLICY "Enable all for messages" ON messages
     FOR ALL USING (true) WITH CHECK (true);
 
 -- Photos: Permitir todo
+DROP POLICY IF EXISTS "Enable all for photos" ON photos;
 CREATE POLICY "Enable all for photos" ON photos
     FOR ALL USING (true) WITH CHECK (true);
 
 -- Mood Entries: Permitir todo
+DROP POLICY IF EXISTS "Enable all for mood_entries" ON mood_entries;
 CREATE POLICY "Enable all for mood_entries" ON mood_entries
     FOR ALL USING (true) WITH CHECK (true);
 

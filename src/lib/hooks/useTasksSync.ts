@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
 import { useCoupleAuth } from './useCoupleAuth';
+import type { Database } from '../types/database.types';
+
+type TaskRow = Database['public']['Tables']['tasks']['Row'];
+type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
 
 interface Task {
   id: string;
@@ -32,7 +36,7 @@ export function useTasksSync() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTasks((data || []).map((d: any) => ({ id: d.id, title: d.title, completed: d.completed })));
+      setTasks((data || []).map((d: any) => ({ id: d.id, title: d.title, completed: d.completed || false })));
     } catch (error) {
       console.error('Error fetching tasks:', error);
     } finally {
@@ -60,9 +64,15 @@ export function useTasksSync() {
 
   const addTask = async (title: string) => {
     try {
+      const newTask: TaskInsert = {
+        title,
+        couple_id: coupleId!,
+        completed: false
+      };
+
       const { error } = await (supabase as any)
         .from('tasks')
-        .insert([{ title, couple_id: coupleId, completed: false }]);
+        .insert([newTask]);
 
       if (error) throw error;
       return { success: true };

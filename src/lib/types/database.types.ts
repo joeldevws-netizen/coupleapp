@@ -12,79 +12,184 @@ export interface Database {
       couples: {
         Row: {
           id: string
-          created_at: string
+          couple_code: string
+          partner1_name: string | null
+          partner2_name: string | null
           anniversary_date: string
-          partner1_id: string | null
-          partner2_id: string | null
+          theme_color: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
+          couple_code: string
+          partner1_name?: string | null
+          partner2_name?: string | null
+          anniversary_date?: string
+          theme_color?: string | null
           created_at?: string
-          anniversary_date: string
-          partner1_id?: string | null
-          partner2_id?: string | null
+          updated_at?: string
         }
         Update: {
           id?: string
-          created_at?: string
+          couple_code?: string
+          partner1_name?: string | null
+          partner2_name?: string | null
           anniversary_date?: string
-          partner1_id?: string | null
-          partner2_id?: string | null
+          theme_color?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      important_dates: {
+        Row: {
+          id: string
+          couple_id: string
+          title: string
+          date: string
+          type: 'anniversary' | 'birthday' | 'special' | 'recurring'
+          icon: string
+          description: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          couple_id: string
+          title: string
+          date: string
+          type: 'anniversary' | 'birthday' | 'special' | 'recurring'
+          icon?: string
+          description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          couple_id?: string
+          title?: string
+          date?: string
+          type?: 'anniversary' | 'birthday' | 'special' | 'recurring'
+          icon?: string
+          description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      bucket_list: {
+        Row: {
+          id: string
+          couple_id: string
+          title: string
+          category: 'travel' | 'activity' | 'food' | 'adventure' | 'other'
+          priority: 'high' | 'medium' | 'low'
+          completed: boolean
+          notes: string | null
+          created_at: string
+          updated_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          couple_id: string
+          title: string
+          category: 'travel' | 'activity' | 'food' | 'adventure' | 'other'
+          priority: 'high' | 'medium' | 'low'
+          completed?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          couple_id?: string
+          title?: string
+          category?: 'travel' | 'activity' | 'food' | 'adventure' | 'other'
+          priority?: 'high' | 'medium' | 'low'
+          completed?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+          completed_at?: string | null
         }
       }
       tasks: {
         Row: {
           id: string
           couple_id: string
-          created_at: string
-          updated_at: string
           title: string
           completed: boolean
-          created_by: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           couple_id: string
-          created_at?: string
-          updated_at?: string
           title: string
           completed?: boolean
-          created_by?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           couple_id?: string
-          created_at?: string
-          updated_at?: string
           title?: string
           completed?: boolean
-          created_by?: string | null
+          created_at?: string
+          updated_at?: string
         }
       }
       messages: {
         Row: {
           id: string
           couple_id: string
-          created_at: string
-          author_id: string | null
           content: string
           sender_name: string
+          created_at: string
         }
         Insert: {
           id?: string
           couple_id: string
-          created_at?: string
-          author_id?: string | null
           content: string
           sender_name: string
+          created_at?: string
         }
         Update: {
           id?: string
           couple_id?: string
-          created_at?: string
-          author_id?: string | null
           content?: string
           sender_name?: string
+          created_at?: string
+        }
+      }
+      photos: {
+        Row: {
+          id: string
+          couple_id: string
+          url: string
+          caption: string | null
+          date_taken: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          couple_id: string
+          url: string
+          caption?: string | null
+          date_taken?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          couple_id?: string
+          url?: string
+          caption?: string | null
+          date_taken?: string | null
+          created_at?: string
+          updated_at?: string
         }
       }
       mood_entries: {

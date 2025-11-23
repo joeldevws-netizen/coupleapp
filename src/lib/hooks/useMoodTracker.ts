@@ -33,12 +33,12 @@ export function useMoodTracker() {
 
     const fetchCurrentMoods = async () => {
       // Obtener el mood más reciente de cada partner
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('mood_entries')
         .select('*')
         .eq('couple_id', coupleId)
         .order('created_at', { ascending: false })
-        .limit(10) as { data: MoodEntry[] | null; error: any }; // Obtener últimos 10 para asegurar que tenemos de ambos
+        .limit(10); // Obtener últimos 10 para asegurar que tenemos de ambos
 
       if (error) {
         console.error('Error fetching moods:', error);
@@ -48,8 +48,8 @@ export function useMoodTracker() {
 
       if (data && data.length > 0) {
         // Encontrar el mood más reciente de cada persona
-        const myLatestMood = data.find(m => m.partner_name === partnerName);
-        const partnerLatestMood = data.find(m => m.partner_name !== partnerName);
+        const myLatestMood = (data as any[]).find(m => m.partner_name === partnerName);
+        const partnerLatestMood = (data as any[]).find(m => m.partner_name !== partnerName);
 
         setMoods({
           myMood: myLatestMood?.mood as Mood || null,
@@ -103,16 +103,16 @@ export function useMoodTracker() {
       return { success: false, error: new Error('No couple ID or partner name') };
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('mood_entries')
       .insert([{
         couple_id: coupleId,
         partner_name: partnerName,
-        mood: mood as string,
+        mood: mood,
         note: note || null
-      }] as any)
+      }])
       .select()
-      .single() as { data: MoodEntry | null; error: any };
+      .single();
 
     if (error) {
       console.error('Error setting mood:', error);

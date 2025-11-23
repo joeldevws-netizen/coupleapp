@@ -66,13 +66,12 @@ export function useMessages(coupleId: string | null, limit: number = 50) {
     const newMessage: MessageInsert = {
       couple_id: coupleId,
       content: content.trim(),
-      author_id: user.user?.id,
       sender_name: senderName,
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('messages')
-      .insert([newMessage] as any)
+      .insert([newMessage])
       .select()
       .single();
 
