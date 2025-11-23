@@ -131,14 +131,22 @@ export function useCoupleAuth() {
       setLoading(true);
 
       // Find couple by code
+      console.log('Searching for couple with code:', coupleCode.toUpperCase().trim());
       const { data, error } = await (supabase as any)
         .from('couples')
         .select('*')
-        .eq('couple_code', coupleCode.toUpperCase())
+        .eq('couple_code', coupleCode.toUpperCase().trim())
         .single();
 
-      if (error || !data) {
-        return { success: false, error: 'Código de pareja inválido' };
+      console.log('Join result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error finding couple:', error);
+        return { success: false, error: 'Error de conexión o código no encontrado: ' + error.message };
+      }
+
+      if (!data) {
+        return { success: false, error: 'Código de pareja no encontrado' };
       }
 
       // Update partner2 name if not set
