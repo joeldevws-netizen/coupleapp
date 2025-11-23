@@ -50,12 +50,19 @@ export default function CoupleCodeAuth() {
     // y AppContainer manejará el cambio automáticamente
   };
 
+  const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+
   const runDiagnostics = async () => {
+    setShowDiagnostics(true);
+    setDiagnosticLogs(['Iniciando diagnóstico...']);
     const logs: string[] = [];
-    const log = (msg: string) => logs.push(msg);
+    const log = (msg: string) => {
+      logs.push(msg);
+      setDiagnosticLogs([...logs]);
+    };
 
     try {
-      log('Iniciando diagnóstico...');
       log(`URL configurada: ${!!import.meta.env.PUBLIC_SUPABASE_URL ? 'SÍ' : 'NO'}`);
       log(`Key configurada: ${!!import.meta.env.PUBLIC_SUPABASE_KEY || !!import.meta.env.PUBLIC_SUPABASE_ANON_KEY ? 'SÍ' : 'NO'}`);
 
@@ -74,8 +81,11 @@ export default function CoupleCodeAuth() {
     } catch (e: any) {
       log(`❌ Error inesperado: ${e.message}`);
     }
+  };
 
-    alert(logs.join('\n'));
+  const clearData = () => {
+    localStorage.clear();
+    window.location.reload();
   };
 
   return (
@@ -83,13 +93,6 @@ export default function CoupleCodeAuth() {
       <div className="theme-toggle-wrapper">
         <ThemeToggle />
       </div>
-      
-      <button 
-        onClick={runDiagnostics} 
-        style={{ position: 'absolute', top: '1rem', left: '1rem', opacity: 0.5, fontSize: '0.8rem' }}
-      >
-        🛠️ Diagnóstico
-      </button>
 
       <div className="auth-card">
         <div className="auth-header">
@@ -105,6 +108,38 @@ export default function CoupleCodeAuth() {
             <button className="auth-btn secondary" onClick={() => setMode('join')}>
               💑 Unirse a Pareja
             </button>
+            
+            <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-primary)', paddingTop: '1rem' }}>
+              <button 
+                onClick={runDiagnostics} 
+                style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline', marginRight: '1rem' }}
+              >
+                🛠️ Ejecutar Diagnóstico
+              </button>
+              <button 
+                onClick={clearData} 
+                style={{ background: 'none', border: 'none', color: 'red', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }}
+              >
+                🗑️ Resetear App
+              </button>
+            </div>
+
+            {showDiagnostics && (
+              <div style={{ 
+                marginTop: '1rem', 
+                padding: '1rem', 
+                background: '#000', 
+                color: '#0f0', 
+                borderRadius: '8px', 
+                fontSize: '0.75rem', 
+                fontFamily: 'monospace',
+                maxHeight: '200px',
+                overflowY: 'auto',
+                textAlign: 'left'
+              }}>
+                {diagnosticLogs.map((l, i) => <div key={i}>{l}</div>)}
+              </div>
+            )}
           </div>
         )}
 
