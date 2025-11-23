@@ -1,0 +1,267 @@
+/* SISTEMA DE TEMAS - Rosa Pastel & Amarillo Pastel */
+
+/* ==================== MODO CLARO (Pastel Brillante) ==================== */
+:root[data-theme="light"] {
+  /* Fondos - Brillantes y Pasteles */
+  --bg-primary: linear-gradient(135deg, #ffc3ee 0%, #fff59d 100%);
+  --bg-surface: rgba(255, 255, 255, 0.95);
+  --bg-elevated: #ffffff;
+  --bg-input: #ffffff;
+  --bg-hover: rgba(255, 195, 238, 0.2);
+  
+  /* Bordes */
+  --border-primary: #ffc3ee;
+  --border-secondary: rgba(255, 195, 238, 0.3);
+  --border-hover: #ff6b9d;
+  
+  /* Textos - Oscuros para buen contraste */
+  --text-primary: #2d2d2d;
+  --text-secondary: #5a5a5a;
+  --text-tertiary: #8a8a8a;
+  --text-inverse: #ffffff;
+  
+  /* Acentos - Rosa y Amarillo vibrantes */
+  --accent-pink: #ff6b9d;
+  --accent-pink-light: #ffc3ee;
+  --accent-yellow: #ffa726;
+  --accent-yellow-light: #fff59d;
+  
+  /* Gradientes */
+  --gradient-primary: linear-gradient(135deg, #ffc3ee, #fff59d);
+  --gradient-accent: linear-gradient(135deg, #ff6b9d, #ffa726);
+  --gradient-subtle: linear-gradient(135deg, #ffc3ee15, #fff59d15);
+  
+  /* Sombras */
+  --shadow-sm: 0 4px 12px rgba(255, 107, 157, 0.2);
+  --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+  --shadow-glow: 0 0 30px rgba(255, 107, 157, 0.4);
+}
+
+/* ==================== MODO OSCURO (Verdaderamente Oscuro) ==================== */
+:root[data-theme="dark"] {
+  /* Fondos - MUY OSCUROS (casi negro) */
+  --bg-primary: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  --bg-surface: rgba(25, 25, 35, 0.98);
+  --bg-elevated: #1e1e2e;
+  --bg-input: #12121a;
+  --bg-hover: rgba(255, 107, 157, 0.1);
+  
+  /* Bordes - Acentos visibles */
+  --border-primary: #ff6b9d;
+  --border-secondary: rgba(255, 107, 157, 0.2);
+  --border-hover: #ffc3ee;
+  
+  /* Textos - Muy claros para contraste */
+  --text-primary: #f5f5f5;
+  --text-secondary: #c0c0c0;
+  --text-tertiary: #8a8a8a;
+  --text-inverse: #0a0a0a;
+  
+  /* Acentos - Rosa y Amarillo brillantes para pop */
+  --accent-pink: #ff6b9d;
+  --accent-pink-light: #ffc3ee;
+  --accent-yellow: #ffb74d;
+  --accent-yellow-light: #ffd54f;
+  
+  /* Gradientes - Oscuros con acentos brillantes */
+  --gradient-primary: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  --gradient-accent: linear-gradient(135deg, #ff6b9d, #ffb74d);
+  --gradient-subtle: linear-gradient(135deg, #ff6b9d10, #ffb74d10);
+  
+  /* Sombras - Muy profundas */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.8);
+  --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.9);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.95);
+  --shadow-glow: 0 0 30px rgba(255, 107, 157, 0.6);
+}
+
+/* ==================== ESTILOS BASE ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background: var(--bg-primary);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.5s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+/* ==================== ANIMACIÓN DE FONDO ==================== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, var(--accent-pink-light) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--accent-yellow-light) 0%, transparent 50%);
+  opacity: 0.3;
+  animation: bgFloat 12s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity 0.5s ease;
+}
+
+/* En modo oscuro, el fondo animado es más sutil */
+[data-theme="dark"] body::before {
+  opacity: 0.08;
+}
+
+@keyframes bgFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.1); }
+  66% { transform: translate(-20px, 30px) scale(0.9); }
+}
+
+/* Partículas sutiles en modo oscuro */
+[data-theme="dark"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 107, 157, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 60% 70%, rgba(255, 181, 77, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+  animation: particleFloat 20s linear infinite;
+}
+
+@keyframes particleFloat {
+  0% { background-position: 0 0; }
+  100% { background-position: 50px 50px; }
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-accent);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-pink);
+}
+
+/* ==================== SELECTION ==================== */
+::selection {
+  background: var(--accent-pink);
+  color: var(--text-inverse);
+}
+
+/* ==================== ANIMACIONES GLOBALES ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==================== UTILIDADES ==================== */
+.gradient-text {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.surface {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-secondary);
+  transition: all 0.3s ease;
+}
+
+.surface:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1920px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+/* ==================== MODO OSCURO - Efectos Especiales ==================== */
+[data-theme="dark"] {
+  /* Pequeño glow en elementos interactivos */
+  button:hover {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* Mejor contraste en inputs en modo oscuro */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  color: var(--text-primary);
+  background: var(--bg-input);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-tertiary);
+}
