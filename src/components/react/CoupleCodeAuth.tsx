@@ -11,7 +11,6 @@ export default function CoupleCodeAuth() {
     coupleCode: '',
   });
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
-  const [joinSuccess, setJoinSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCreate = async () => {
@@ -43,12 +42,11 @@ export default function CoupleCodeAuth() {
     setError(null);
     const result = await joinCouple(formData.coupleCode, formData.partnerName);
     
-    if (result.success) {
-      setJoinSuccess(true);
-      // The auth state will update and AppContainer will re-render
-    } else {
+    if (!result.success) {
       setError(result.error || 'Error al unirse a la pareja');
     }
+    // Si es exitoso, el hook actualizará isAuthenticated
+    // y AppContainer manejará el cambio automáticamente
   };
 
   return (
@@ -103,7 +101,7 @@ export default function CoupleCodeAuth() {
           </div>
         )}
 
-        {mode === 'join' && !joinSuccess && (
+        {mode === 'join' && (
           <div className="auth-form">
             <button className="back-btn" onClick={() => { setMode('choice'); setError(null); }}>← Volver</button>
             <h2>Unirse a Pareja</h2>
@@ -113,15 +111,6 @@ export default function CoupleCodeAuth() {
             <button className="auth-btn primary" onClick={handleJoin} disabled={loading}>
               {loading ? 'Conectando...' : 'Unirse'}
             </button>
-          </div>
-        )}
-
-        {joinSuccess && (
-          <div className="success-screen">
-            <div className="success-icon">✅</div>
-            <h2>¡Conectado Exitosamente!</h2>
-            <p>Cargando tu espacio de pareja...</p>
-            <div className="loading-spinner"></div>
           </div>
         )}
       </div>
