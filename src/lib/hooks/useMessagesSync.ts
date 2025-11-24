@@ -14,16 +14,6 @@ export function useMessagesSync() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated || !coupleId) {
-      setLoading(false);
-      return;
-    }
-
-    fetchMessages();
-    subscribeToChanges();
-  }, [coupleId, isAuthenticated]);
-
   const fetchMessages = async () => {
     try {
       const { data, error } = await (supabase as any)
@@ -42,7 +32,15 @@ export function useMessagesSync() {
     }
   };
 
-  const subscribeToChanges = () => {
+  useEffect(() => {
+    if (!isAuthenticated || !coupleId) {
+      setLoading(false);
+      return;
+    }
+
+    fetchMessages();
+    
+    // Subscribe to real-time changes
     const channel = supabase
       .channel('messages_changes')
       .on('postgres_changes' as any, {
@@ -55,10 +53,11 @@ export function useMessagesSync() {
       })
       .subscribe();
 
+    // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
-  };
+  }, [coupleId, isAuthenticated]);
 
   const sendMessage = async (content: string, senderName: string) => {
     try {
@@ -67,6 +66,10 @@ export function useMessagesSync() {
         .insert([{ content, sender_name: senderName, couple_id: coupleId }]);
 
       if (error) throw error;
+      
+      // Immediately fetch to show the new message
+      await fetchMessages();
+      
       return { success: true };
     } catch (error: any) {
       console.error('Error sending message:', error);

@@ -17,16 +17,6 @@ export function useTasksSync() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated || !coupleId) {
-      setLoading(false);
-      return;
-    }
-
-    fetchTasks();
-    subscribeToChanges();
-  }, [coupleId, isAuthenticated]);
-
   const fetchTasks = async () => {
     try {
       const { data, error } = await (supabase as any)
@@ -44,7 +34,15 @@ export function useTasksSync() {
     }
   };
 
-  const subscribeToChanges = () => {
+  useEffect(() => {
+    if (!isAuthenticated || !coupleId) {
+      setLoading(false);
+      return;
+    }
+
+    fetchTasks();
+    
+    // Subscribe to real-time changes
     const channel = supabase
       .channel('tasks_changes')
       .on('postgres_changes' as any, {
@@ -57,10 +55,11 @@ export function useTasksSync() {
       })
       .subscribe();
 
+    // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
-  };
+  }, [coupleId, isAuthenticated]);
 
   const addTask = async (title: string) => {
     try {
@@ -70,11 +69,17 @@ export function useTasksSync() {
         completed: false
       };
 
-      const { error } = await (supabase as any)
+      const { data, error } = await (supabase as any)
         .from('tasks')
-        .insert([newTask]);
+        .insert([newTask])
+        .select()
+        .single();
 
       if (error) throw error;
+      
+      // Immediately fetch to show the new task
+      await fetchTasks();
+      
       return { success: true };
     } catch (error: any) {
       console.error('Error adding task:', error);

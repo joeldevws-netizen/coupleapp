@@ -130,50 +130,76 @@ export function useCoupleAuth() {
     try {
       setLoading(true);
 
+      // Validate input
+      const trimmedCode = coupleCode.toUpperCase().trim();
+      const trimmedName = partnerName.trim();
+
+      if (trimmedCode.length !== 6) {
+        return { success: false, error: 'El código debe tener 6 caracteres' };
+      }
+
+      if (!trimmedName) {
+        return { success: false, error: 'Por favor ingresa tu nombre' };
+      }
+
       // Find couple by code
-      console.log('Searching for couple with code:', coupleCode.toUpperCase().trim());
+      console.log('Buscando pareja con código:', trimmedCode);
       const { data, error } = await (supabase as any)
         .from('couples')
         .select('*')
-        .eq('couple_code', coupleCode.toUpperCase().trim())
+        .eq('couple_code', trimmedCode)
         .single();
 
-      console.log('Join result:', { data, error });
+      console.log('Resultado de búsqueda:', { data, error });
 
       if (error) {
-        console.error('Supabase error finding couple:', error);
-        return { success: false, error: 'Error de conexión o código no encontrado: ' + error.message };
+        if (error.code === 'PGRST116') {
+          return { success: false, error: 'Código de pareja no encontrado. Verifica que sea correcto.' };
+        }
+        console.error('Error de Supabase al buscar pareja:', error);
+        return { success: false, error: 'Error de conexión. Verifica tu configuración de Supabase.' };
       }
 
       if (!data) {
         return { success: false, error: 'Código de pareja no encontrado' };
       }
 
+      // Check if already a member
+      if (data.partner1_name === trimmedName || data.partner2_name === trimmedName) {
+        console.log('Usuario ya es miembro de esta pareja');
+      }
+
       // Update partner2 name if not set
       if (!data.partner2_name) {
-        await (supabase as any)
+        console.log('Actualizando nombre del segundo miembro...');
+        const { error: updateError } = await (supabase as any)
           .from('couples')
-          .update({ partner2_name: partnerName })
+          .update({ partner2_name: trimmedName })
           .eq('id', data.id);
+        
+        if (updateError) {
+          console.error('Error actualizando partner2:', updateError);
+        }
       }
 
       // Save to localStorage
       localStorage.setItem(STORAGE_KEYS.COUPLE_ID, data.id);
-      localStorage.setItem(STORAGE_KEYS.COUPLE_CODE, coupleCode.toUpperCase());
-      localStorage.setItem(STORAGE_KEYS.PARTNER_NAME, partnerName);
+      localStorage.setItem(STORAGE_KEYS.COUPLE_CODE, trimmedCode);
+      localStorage.setItem(STORAGE_KEYS.PARTNER_NAME, trimmedName);
 
       setAuth({
         coupleId: data.id,
-        coupleCode: coupleCode.toUpperCase(),
-        partnerName,
+        coupleCode: trimmedCode,
+        partnerName: trimmedName,
         isAuthenticated: true,
         anniversaryDate: data.anniversary_date,
       });
 
+      console.log('✅ Unión exitosa a la pareja');
       return { success: true };
     } catch (error: any) {
-      console.error('Error joining couple:', error);
-      return { success: false, error: error.message };
+      console.error('Error inesperado al unirse a pareja:', error);
+      return { success: false, error: 'Error inesperado: ' + error.message };
     } finally {
       setLoading(false);
     }

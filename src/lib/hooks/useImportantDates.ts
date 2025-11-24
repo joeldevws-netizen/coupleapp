@@ -22,17 +22,6 @@ export function useImportantDates() {
   const [dates, setDates] = useState<ImportantDate[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load dates from Supabase
-  useEffect(() => {
-    if (!isAuthenticated || !coupleId) {
-      setLoading(false);
-      return;
-    }
-
-    fetchDates();
-    subscribeToChanges();
-  }, [coupleId, isAuthenticated]);
-
   const fetchDates = async () => {
     try {
       const { data, error } = await (supabase as any)
@@ -64,7 +53,15 @@ export function useImportantDates() {
     }
   };
 
-  const subscribeToChanges = () => {
+  useEffect(() => {
+    if (!isAuthenticated || !coupleId) {
+      setLoading(false);
+      return;
+    }
+
+    fetchDates();
+    
+    // Subscribe to real-time changes
     const channel = supabase
       .channel('important_dates_changes')
       .on(
@@ -81,10 +78,11 @@ export function useImportantDates() {
       )
       .subscribe();
 
+    // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
-  };
+  }, [coupleId, isAuthenticated]);
 
   const addDate = async (date: Omit<ImportantDate, 'id'>) => {
     try {
@@ -104,6 +102,9 @@ export function useImportantDates() {
         .single();
 
       if (error) throw error;
+
+      // Immediately fetch to show the new date
+      await fetchDates();
 
       return { success: true, data };
     } catch (error: any) {

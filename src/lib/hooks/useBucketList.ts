@@ -22,16 +22,6 @@ export function useBucketList() {
   const [items, setItems] = useState<BucketItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthenticated || !coupleId) {
-      setLoading(false);
-      return;
-    }
-
-    fetchItems();
-    subscribeToChanges();
-  }, [coupleId, isAuthenticated]);
-
   const fetchItems = async () => {
     try {
       const { data, error } = await (supabase as any)
@@ -62,7 +52,15 @@ export function useBucketList() {
     }
   };
 
-  const subscribeToChanges = () => {
+  useEffect(() => {
+    if (!isAuthenticated || !coupleId) {
+      setLoading(false);
+      return;
+    }
+
+    fetchItems();
+    
+    // Subscribe to real-time changes
     const channel = supabase
       .channel('bucket_list_changes')
       .on(
@@ -79,10 +77,11 @@ export function useBucketList() {
       )
       .subscribe();
 
+    // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
-  };
+  }, [coupleId, isAuthenticated]);
 
   const addItem = async (item: Omit<BucketItem, 'id' | 'completed'>) => {
     try {
@@ -102,6 +101,10 @@ export function useBucketList() {
         .single();
 
       if (error) throw error;
+      
+      // Immediately fetch to show the new item
+      await fetchItems();
+      
       return { success: true, data };
     } catch (error: any) {
       console.error('Error adding item:', error);

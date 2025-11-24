@@ -25,6 +25,8 @@ export default function CoupleCodeAuth() {
     
     if (result.success && result.coupleCode) {
       setGeneratedCode(result.coupleCode);
+      // The success screen with the code will be shown
+      // User can then share the code with their partner
     } else {
       setError(result.error || 'Error al crear la pareja');
     }
@@ -45,9 +47,10 @@ export default function CoupleCodeAuth() {
     
     if (!result.success) {
       setError(result.error || 'Error al unirse a la pareja');
+    } else {
+      // Force reload to ensure UI updates with new auth state
+      window.location.reload();
     }
-    // Si es exitoso, el hook actualizará isAuthenticated
-    // y AppContainer manejará el cambio automáticamente
   };
 
   const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
